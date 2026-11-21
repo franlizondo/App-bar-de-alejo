@@ -1,0 +1,67 @@
+CAJA DEL BAR (con sincronización) - cómo ponerla en marcha
+==========================================================
+
+La caja guarda los datos en Firebase (de Google, gratis). Así:
+- Lo que cargás en un celular aparece al instante en los otros.
+- Sin internet sigue funcionando: guarda en el celular y sube todo cuando vuelve la señal.
+- Si se rompe un celular no se pierde nada: entrás desde otro y está todo.
+
+Lo armás UNA SOLA VEZ (unos 15 minutos, desde una computadora).
+Después sirve para todos tus clientes: cada local entra con su propia cuenta y no ve los datos de los demás.
+
+
+PASO 1 - Crear el proyecto en Firebase
+  1. Entrá a https://console.firebase.google.com con tu cuenta de Google.
+  2. "Crear un proyecto". Nombre: por ejemplo "caja-bares". Google Analytics no hace falta.
+  3. El plan gratis (Spark) alcanza. No pide tarjeta.
+
+PASO 2 - Activar el login con email
+  1. En el menú: Compilación (Build) > Authentication > Comenzar.
+  2. Pestaña "Método de acceso": elegí "Correo electrónico/contraseña" y habilitalo. Guardar.
+
+PASO 3 - Crear la base de datos
+  1. Menú: Compilación > Firestore Database > Crear base de datos.
+  2. Ubicación: southamerica-east1 (São Paulo), la más cercana a Argentina.
+  3. Elegí "modo de producción".
+  4. Andá a la pestaña "Reglas", borrá lo que hay, pegá el contenido del archivo firestore.rules y tocá "Publicar".
+     (Estas reglas hacen que cada local solo pueda ver sus propios datos.)
+
+PASO 4 - Conectar la app con tu proyecto
+  1. Tocá la ruedita (Configuración del proyecto) > "Tus apps" > el ícono web </>.
+  2. Ponele un nombre (ej: "Caja") y registrá la app. No hace falta Firebase Hosting.
+  3. Te muestra un bloque "firebaseConfig". Copiá apiKey, authDomain, projectId y appId
+     y pegalos en el archivo firebase-config.js (reemplazando los PEGAR-ACA).
+
+PASO 5 - Crear la cuenta de cada cliente
+  1. Authentication > Usuarios > "Agregar usuario".
+  2. Poné un email y una contraseña para el local (ej: elrincon@gmail.com).
+  3. Todos los celulares de ESE local entran con ese mismo email y contraseña.
+  4. Para otro cliente, creá otro usuario. Cada uno ve solo lo suyo.
+  (Si el cliente se olvida la contraseña, en la app hay un botón "Me olvidé la contraseña"
+   que le manda un email para cambiarla, siempre que el email sea real.)
+
+PASO 6 - Publicarla en Netlify
+  - Si ya habías subido la versión anterior: entrá a tu sitio en Netlify > pestaña "Deploys"
+    y arrastrá esta carpeta. Así queda el mismo link de siempre.
+  - Si es la primera vez: https://app.netlify.com/drop y arrastrá la carpeta.
+  - Las ventas que el cliente ya tenía guardadas en el celular con la versión anterior
+    no se pierden: al entrar, la app muestra "Subirlas" para pasarlas a la nube.
+
+PASO 7 - En el celular del cliente
+  1. Abrir el link en Chrome (Safari en iPhone).
+  2. Entrar con el email y la contraseña del local (la primera vez necesita internet).
+  3. Tocar "Instalar" (o menú > "Agregar a la pantalla principal").
+  4. Arriba a la derecha se ve el estado: "Sincronizado", "Subiendo cambios…" o "Sin internet".
+
+
+VER LOS DATOS DE UN CLIENTE
+  En Firebase > Firestore Database > negocios > (código del usuario). El código del usuario
+  lo ves en Authentication > Usuarios, columna "UID del usuario".
+
+LÍMITES DEL PLAN GRATIS
+  50.000 lecturas y 20.000 escrituras por día para todo el proyecto. Una venta es una escritura.
+  Para varios bares chicos sobra. El consumo se ve en Firebase > Firestore > Uso.
+
+SI CAMBIÁS ALGO DE LA APP
+  En sw.js cambiá VERSION (ej: "caja-v3") y volvé a subir la carpeta a Netlify.
+  Los celulares toman la versión nueva la próxima vez que abren la app con internet.
